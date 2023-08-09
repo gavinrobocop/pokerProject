@@ -36,6 +36,61 @@ void shuffleDeck(struct tableDeck* deck){
 
 }
 
+//player functions
+
+void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlind, int* bigBlind){
+	fflush(stdout);
+	scanf("%d", userDecision);
+
+	//user decision for 1st hand
+	if(*userDecision == 1) { //user chooses to call
+		printf("\nUser chose to call");
+		userPlayer->chips -= *bigBlind;
+		printf("\nUser puts %d chips in pot with %d remaining\n\n", *bigBlind, userPlayer->chips);
+	} else if(*userDecision == 2) { //user chooses to raise
+		printf("\nUser chose to raise");
+		printf("\nPlease enter how much you would like to raise:");
+		fflush(stdout);
+		scanf("%d", userDecision);
+		printf("\nUser raises %d", *userDecision);
+		userPlayer->chips -= *userDecision;
+	
+	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
+		printf("\nUser chose to fold");
+	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
+		printf("\nUser chose to leave game");
+	} else { //user chose invalid input
+		printf("\nInvalid input, good job dumbass");
+	}
+
+}
+
+//user decision after the 1st hand if user going first
+void userDecision_2(int* userDecision, struct player* userPlayer){ 
+	fflush(stdout);
+	scanf("%d", userDecision);
+
+	//user decision for 2nd hand
+	if(*userDecision == 1){ //user chooses to check 
+		printf("\nUser chose to check");
+	} else if(*userDecision == 2){ //user chooses to bet
+		printf("\nUser chose to bet");
+		printf("\nPlease enter how much you would like to bet: ");
+		fflush(stdout);
+		scanf("%d", userDecision);
+		printf("\nUser bet %d", *userDecision);
+		userPlayer->chips -= *userDecision;
+	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
+		printf("\nUser chose to fold");
+	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
+		printf("\nUser chose to leave game");
+	} else { //user chose invalid input 
+		printf("\nInvalid input, good job dumbass");
+	}
+	
+}
+
+
 //Print Functions
 
 void printIntro(void){
@@ -48,7 +103,7 @@ void printTableDeck(struct tableDeck* deck){
 	}
 }
 
-void printInitialPlayer(struct player* userPlayer, int* totalPot){
+void printPlayerUI_1(struct player* userPlayer, int* totalPot){
 	printf("\nPot: %d\n", *totalPot);
 	printf("\nPlayer Chips: %d\n", userPlayer->chips);
 	
@@ -56,7 +111,44 @@ void printInitialPlayer(struct player* userPlayer, int* totalPot){
 	
 	printf("\nYour deck: ");
 	printf("[%d %s] ", userPlayer->playerDeck[0].value, userPlayer->playerDeck[0].suit);
-	printf("[%d %s] ", userPlayer->playerDeck[1].value, userPlayer->playerDeck[1].suit);
+	printf("[%d %s]\n", userPlayer->playerDeck[1].value, userPlayer->playerDeck[1].suit);
+}
+
+void printOptions_1() {
+	printf("\nPlease enter your next move:\n");
+	printf("1.) Call\n");
+	printf("2.) Raise\n");
+	printf("3.) Fold\n");
+	printf("4.) Leave\n");
+	printf("\nEnter here: ");
+}
+
+
+void printPlayerUI_2(struct player* userPlayer, int* totalPot){
+	printf("\nPot: %d\n", *totalPot);
+	printf("\nPlayer Chips: %d\n", userPlayer->chips);
+	
+	//printing player's cards 
+	
+	printf("\nYour deck: ");
+	printf("[%d %s] ", userPlayer->playerDeck[0].value, userPlayer->playerDeck[0].suit);
+	printf("[%d %s]\n", userPlayer->playerDeck[1].value, userPlayer->playerDeck[1].suit);
+
+	//printing table deck
+	
+	printf("\nTable deck: ");
+	printf("[%d %s] ", userPlayer->playerDeck[2].value, userPlayer->playerDeck[2].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[3].value, userPlayer->playerDeck[3].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[4].value, userPlayer->playerDeck[4].suit);
+}
+
+void printOptions_2() {
+	printf("\nPlease enter your next move:\n");
+	printf("1.) Check\n");
+	printf("2.) Bet\n");
+	printf("3.) Fold\n");
+	printf("4.) Leave\n");
+	printf("\nEnter here: ");
 }
 
 int main() {
@@ -136,8 +228,16 @@ int main() {
 	//(two) fold and end the round, (three) raise and give a number for how much you would like to
 	
 	//beginning of ui
+	
+	printPlayerUI_1(&userPlayer, &potTotal);
+	printOptions_1();
+	userDecision_1(&userDecision, &userPlayer, &smallBlind, &bigBlind);
 
-
+	//beginning of 2nd round
+	
+	printPlayerUI_2(&userPlayer, &potTotal);
+	printOptions_2();
+	userDecision_2(&userDecision, &userPlayer);
 
 
 }
