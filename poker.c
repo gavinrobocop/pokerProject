@@ -81,11 +81,37 @@ void userDecision_2(int* userDecision, struct player* userPlayer){
 		printf("\nUser bet %d", *userDecision);
 		userPlayer->chips -= *userDecision;
 	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
-		printf("\nUser chose to fold");
+		printf("\nUser chose to fold"); //will use the continue keyword after displaying winner of round
 	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
-		printf("\nUser chose to leave game");
+		printf("\nUser chose to leave game"); //will use break keyword to breakout of loop to then show final stats of game
 	} else { //user chose invalid input 
-		printf("\nInvalid input, good job dumbass");
+		printf("\nInvalid input, good job dumbass"); //will give player a second chance to answer, if incorrect again will then put input as one FIXME
+	}
+	
+}
+
+//Going to return points based on the hand the player posseses
+int determinePoints(struct player* player_1){ //Determines which hand a player has and returns the score of his hand FIXME
+	
+}
+
+//Comp player functions
+
+void compDecision_1(struct player* compPlayer, int* maxBet){
+	srand(time(NULL)); //if when function gets called throughs an error might be because we seeded before
+	int compDecision = rand() % 100 + 1; //generates a random number between one and one hundred
+	
+	//will now initiate comp decision
+	if(compDecision <= 75){ //comp chose to call
+		printf("\nComputer chose to call");
+	} else if(compDecision > 75 && compDecision < 95){ //comp chose to raise
+		printf("\nComputer chose to raise");
+		compDecision = rand() % *maxBet + 1;
+		compPlayer->chips -= compDecision;
+		printf("\n\nComputer chose to raise %d", compDecision);
+		//Player should now have the option to call or fold FIXME
+	} else if (compDecision >= 95){
+		printf("\nComputer chose to fold"); //Computer chooses to fold (will use continue keyword after displaying winner of the round
 	}
 	
 }
@@ -150,6 +176,49 @@ void printOptions_2() {
 	printf("4.) Leave\n");
 	printf("\nEnter here: ");
 }
+
+
+void printPlayerUI_3(struct player* userPlayer, int* totalPot){
+	printf("\nPot: %d\n", *totalPot);
+	printf("\nPlayer Chips: %d\n", userPlayer->chips);
+	
+	//printing player's cards 
+	
+	printf("\nYour deck: ");
+	printf("[%d %s] ", userPlayer->playerDeck[0].value, userPlayer->playerDeck[0].suit);
+	printf("[%d %s]\n", userPlayer->playerDeck[1].value, userPlayer->playerDeck[1].suit);
+
+	//printing table deck
+	
+	printf("\nTable deck: ");
+	printf("[%d %s] ", userPlayer->playerDeck[2].value, userPlayer->playerDeck[2].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[3].value, userPlayer->playerDeck[3].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[4].value, userPlayer->playerDeck[4].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[5].value, userPlayer->playerDeck[5].suit);
+}
+
+
+void printPlayerUI_4(struct player* userPlayer, int* totalPot){
+	printf("\nPot: %d\n", *totalPot);
+	printf("\nPlayer Chips: %d\n", userPlayer->chips);
+	
+	//printing player's cards 
+	
+	printf("\nYour deck: ");
+	printf("[%d %s] ", userPlayer->playerDeck[0].value, userPlayer->playerDeck[0].suit);
+	printf("[%d %s]\n", userPlayer->playerDeck[1].value, userPlayer->playerDeck[1].suit);
+
+	//printing table deck
+	
+	printf("\nTable deck: ");
+	printf("[%d %s] ", userPlayer->playerDeck[2].value, userPlayer->playerDeck[2].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[3].value, userPlayer->playerDeck[3].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[4].value, userPlayer->playerDeck[4].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[5].value, userPlayer->playerDeck[5].suit);
+	printf("[%d %s] ", userPlayer->playerDeck[6].value, userPlayer->playerDeck[6].suit);
+}
+
+
 
 int main() {
 
@@ -221,8 +290,8 @@ int main() {
 	//will now being initial bets and decisions
 	
 	potTotal += smallBlind + bigBlind;
-	userPlayer.chips -= bigBlind;
-	computerPlayer.chips -= smallBlind;
+	userPlayer.chips -= smallBlind;
+	computerPlayer.chips -= bigBlind;
 
 	//initial bets have been placed into the pot, for the first round of poker the users can either choose to: (one) call the big blind,
 	//(two) fold and end the round, (three) raise and give a number for how much you would like to
@@ -236,6 +305,18 @@ int main() {
 	//beginning of 2nd round
 	
 	printPlayerUI_2(&userPlayer, &potTotal);
+	printOptions_2();
+	userDecision_2(&userDecision, &userPlayer);
+
+	//beginning of 3rd round
+	
+	printPlayerUI_3(&userPlayer, &potTotal);
+	printOptions_2();
+	userDecision_2(&userDecision, &userPlayer);
+
+	//beginning of 4th and final round
+	
+	printPlayerUI_4(&userPlayer, &potTotal);
 	printOptions_2();
 	userDecision_2(&userDecision, &userPlayer);
 
