@@ -38,7 +38,7 @@ void shuffleDeck(struct tableDeck* deck){
 
 //player functions
 
-void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlind, int* bigBlind){
+void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlind, int* bigBlind, int* potTotal){
 	fflush(stdout);
 	scanf("%d", userDecision);
 
@@ -47,6 +47,7 @@ void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlin
 		printf("\nUser chose to call");
 		userPlayer->chips -= *bigBlind;
 		printf("\nUser puts %d chips in pot with %d remaining\n\n", *bigBlind, userPlayer->chips);
+		*potTotal += *bigBlind;
 	} else if(*userDecision == 2) { //user chooses to raise
 		printf("\nUser chose to raise");
 		printf("\nPlease enter how much you would like to raise:");
@@ -54,6 +55,7 @@ void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlin
 		scanf("%d", userDecision);
 		printf("\nUser raises %d", *userDecision);
 		userPlayer->chips -= *userDecision;
+		*potTotal += *userDecision;
 	
 	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
 		printf("\nUser chose to fold");
@@ -66,7 +68,7 @@ void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlin
 }
 
 //user decision after the 1st hand if user going first
-void userDecision_2(int* userDecision, struct player* userPlayer){ 
+void userDecision_2(int* userDecision, struct player* userPlayer, int* potTotal){ 
 	fflush(stdout);
 	scanf("%d", userDecision);
 
@@ -80,6 +82,7 @@ void userDecision_2(int* userDecision, struct player* userPlayer){
 		scanf("%d", userDecision);
 		printf("\nUser bet %d", *userDecision);
 		userPlayer->chips -= *userDecision;
+		*potTotal += *userDecision;
 	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
 		printf("\nUser chose to fold"); //will use the continue keyword after displaying winner of round
 	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
@@ -90,30 +93,97 @@ void userDecision_2(int* userDecision, struct player* userPlayer){
 	
 }
 
+//Helper Functions for determinePoints() function FIXME
+
+void swap(struct card* card_1, struct card* card_2){
+	struct card tempCard = *card_1;
+	*card_1 = *card_2;
+	*card_2 = tempCard;
+}
+
+
+void bubbleSort(struct player* player_1, int n){
+	int i, j;
+	int swapped;
+	for(i = 0; i < n - 1; i++){
+		swapped = 0;
+		for(j = 0; j < n - i - 1; j++){
+			if(player_1->playerDeck[j].value > player_1->playerDeck[j+1].value){
+				swap(&player_1->playerDeck[j], &player_1->playerDeck[j+1]);
+				swapped = 1;
+			}
+		}
+		if(swapped == 0){
+			break;
+		}
+	}
+}
+
+//return one if royal flush and zero if not
+int determineRoyalFlush(struct player* player_1){
+	int royalTotal; 
+}
+
+//beginning of determinePoints() function
 //Going to return points based on the hand the player posseses
 int determinePoints(struct player* player_1){ //Determines which hand a player has and returns the score of his hand FIXME
+
+	//if statement to determine which hand player has, will then return score based on hand
+	//going to have to have to create a function for each of the ten hands
+	//a royal flush returns ten and a single highcard returns a one
 	
+	//Sorting
+	
+	int size = 7;
+	bubbleSort(player_1, size);
+	printf("\nSorted array: ");
+	for(int i = 0; i < size; i++){
+		printf("%d ", player_1->playerDeck[i].value);
+	}
+
+	//going to determine if royal flush
+
+
 }
 
 //Comp player functions
 
-void compDecision_1(struct player* compPlayer, int* maxBet){
+void compDecision_1(struct player* compPlayer, int* maxBet, int* potTotal){
 	srand(time(NULL)); //if when function gets called throughs an error might be because we seeded before
 	int compDecision = rand() % 100 + 1; //generates a random number between one and one hundred
 	
 	//will now initiate comp decision
 	if(compDecision <= 75){ //comp chose to call
 		printf("\nComputer chose to call");
-	} else if(compDecision > 75 && compDecision < 95){ //comp chose to raise
+	} else if(compDecision < 95){ //comp chose to raise
 		printf("\nComputer chose to raise");
 		compDecision = rand() % *maxBet + 1;
 		compPlayer->chips -= compDecision;
 		printf("\n\nComputer chose to raise %d", compDecision);
+		*potTotal += compDecision;
 		//Player should now have the option to call or fold FIXME
-	} else if (compDecision >= 95){
-		printf("\nComputer chose to fold"); //Computer chooses to fold (will use continue keyword after displaying winner of the round
+	} else {
+		printf("\nComputer chose to fold"); //Computer chooses to fold (will use continue keyword after displaying winner of the round)FIXME
 	}
 	
+}
+
+void compDecision_2(struct player* compPlayer, int* maxBet, int* potTotal){
+
+	int compDecision = rand() % 100 + 1;
+
+	if(compDecision <= 66){ //computer chooses to check 
+		printf("\nComputer chose to check");
+	} else if(compDecision <= 90){ //computer chooses to bet
+		printf("\nComputer chose to bet");
+		compDecision = rand() % *maxBet;
+		printf("\nComputer bet %d", compDecision);
+		compPlayer->chips -= compDecision;
+		*potTotal += compDecision;
+	} else { //computer chooses to fold (announce winner of hand and move on to next round) FIXME
+		printf("\nComputer chose to fold"); //will use the continue keyword after displaying winner of round
+	}
+
 }
 
 
@@ -230,20 +300,22 @@ int main() {
 	struct tableDeck table_deck;
 
 	for(int i = 0; i < 13; i++){
-		table_deck.deck[i] = (struct card){"diamonds", i + 1};
+		table_deck.deck[i] = (struct card){"diamonds", i + 2};
 	}
 
 	for(int i = 13; i < 26; i++){
-		table_deck.deck[i] = (struct card){"spades", i - 12};
+		table_deck.deck[i] = (struct card){"spades", i - 11};
 	}
 
 	for(int i = 26; i < 39; i++){
-		table_deck.deck[i] = (struct card){"hearts", i - 25};
+		table_deck.deck[i] = (struct card){"hearts", i - 24};
 	}
 
 	for(int i = 39; i < 52; i++){
-		table_deck.deck[i] = (struct card){"clubs", i - 38};
+		table_deck.deck[i] = (struct card){"clubs", i - 37};
 	}
+
+	printTableDeck(&table_deck);
 
 	shuffleDeck(&table_deck);
 
@@ -300,25 +372,33 @@ int main() {
 	
 	printPlayerUI_1(&userPlayer, &potTotal);
 	printOptions_1();
-	userDecision_1(&userDecision, &userPlayer, &smallBlind, &bigBlind);
+	userDecision_1(&userDecision, &userPlayer, &smallBlind, &bigBlind, &potTotal);
+	compDecision_1(&computerPlayer, &maxBet, &potTotal);
 
 	//beginning of 2nd round
 	
 	printPlayerUI_2(&userPlayer, &potTotal);
 	printOptions_2();
-	userDecision_2(&userDecision, &userPlayer);
+	userDecision_2(&userDecision, &userPlayer, &potTotal);
+	compDecision_2(&computerPlayer, &maxBet, &potTotal);
 
 	//beginning of 3rd round
 	
 	printPlayerUI_3(&userPlayer, &potTotal);
 	printOptions_2();
-	userDecision_2(&userDecision, &userPlayer);
+	userDecision_2(&userDecision, &userPlayer, &potTotal);
+	compDecision_2(&computerPlayer, &maxBet, &potTotal);
 
 	//beginning of 4th and final round
 	
 	printPlayerUI_4(&userPlayer, &potTotal);
 	printOptions_2();
-	userDecision_2(&userDecision, &userPlayer);
+	userDecision_2(&userDecision, &userPlayer, &potTotal);
+	compDecision_2(&computerPlayer, &maxBet, &potTotal);
+
+	//determining winner
+	
+	int userPoints = determinePoints(&userPlayer);
 
 
 }
