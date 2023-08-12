@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 
 //Structures
 
 struct card{
 	char suit[9];
-	int value; //jack = 10 queen = 11 king = 12 ace = 13
+	int value; //jack = 11 queen = 12 king = 13 ace = 14
 };
 
 struct tableDeck{
@@ -93,7 +94,7 @@ void userDecision_2(int* userDecision, struct player* userPlayer, int* potTotal)
 	
 }
 
-//Helper Functions for determinePoints() function FIXME
+//Helper Functions for determinePoints() function
 
 void swap(struct card* card_1, struct card* card_2){
 	struct card tempCard = *card_1;
@@ -119,9 +120,90 @@ void bubbleSort(struct player* player_1, int n){
 	}
 }
 
+//determines if cards are a flush or not (five cards have same suit)
+//if a flush returns one if not a flush returns zero
+int determineFlush(struct player* player_1){
+	int diamondsTotal = 0;
+	int spadesTotal = 0;
+	int clubsTotal = 0;
+	int heartsTotal = 0;
+
+	//using strcmp() to determine if strings are equal (same suit), will return zero if equal
+	for(int i = 0; i < 7; i++){
+		if(strcmp(player_1->playerDeck[i].suit, "diamonds") == 0){
+			diamondsTotal++;
+		} else if (strcmp(player_1->playerDeck[i].suit, "spades") == 0){
+			spadesTotal++;
+		} else if (strcmp(player_1->playerDeck[i].suit, "clubs") == 0){
+			clubsTotal++;
+		} else if (strcmp(player_1->playerDeck[i].suit, "hearts") == 0){
+			heartsTotal++;
+		} else {
+			printf("Something is not working with the determineFlush function");
+		}
+	}
+
+	//checking if any are above suit totals are above five
+	if(diamondsTotal >= 5){
+		return 1;
+	} else if(spadesTotal >= 5){
+		return 1;
+	} else if(clubsTotal >= 5){
+		return 1;
+	} else if(heartsTotal >= 5){
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+//determine if cards are a straight or not, will return a one if a straight and will return zero if not
+int determineStraight(struct player* player_1){
+	int cardPoints = 0;
+	int thisCardValue = 0;
+	int nextCardValue = 0;
+	
+	for(int i = 0; i < 6; i++){
+		//To check if straight has been achieved
+		if(cardPoints >= 4){
+			return 1;
+			break;
+		}
+		thisCardValue = player_1->playerDeck[i].value;
+		nextCardValue = player_1->playerDeck[i+1].value;
+		if(thisCardValue == nextCardValue - 1){
+			cardPoints++;
+		} else if(thisCardValue == nextCardValue){
+			continue;
+		} else {
+			cardPoints = 0;
+		}
+	}
+
+	if(cardPoints >= 4){
+		return 1;
+	} else {
+		return 0;
+	}
+
+}
+
 //return one if royal flush and zero if not
 int determineRoyalFlush(struct player* player_1){
-	int royalTotal; 
+	int tenOfSameSuit = 0;
+	int jokerOfSameSuit = 0;
+	int queenOfSameSuit = 0;
+	int kingOfSameSuit = 0;
+	char sameSuit[9];
+
+	for(int i = 6; i >= 0; i--){
+		strcpy(sameSuit, player_1->playerDeck.suit);
+		tenOfSameSuit = 0;
+		jokerOfSameSuit = 0;
+		queenOfSameSuit = 0;
+		kingOfSameSuit = 0;
+
+	}
 }
 
 //beginning of determinePoints() function
@@ -142,6 +224,14 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 	}
 
 	//going to determine if royal flush
+	
+
+	//Testing
+	if(determineStraight(player_1) == 1){
+		printf("shit straight");
+	} else {
+		printf("shit ain't straight at all");
+	}
 
 
 }
