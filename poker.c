@@ -304,6 +304,80 @@ int determineFourOfAKind(struct player* player_1){
 		}
 	}
 	return 0;
+
+}
+
+//return one if a fullhouse and zero if not
+int determineFullHouse(struct player* player_1){
+	int threePete = 0; //will equal one if we have three matching cards
+	int twoPete = 0; //will equal one if we have two matching cards
+	int numOfMatches;
+	int valueToMatch;
+	for(int i = 0; i < 7; i++){
+		numOfMatches = 0;
+		valueToMatch = player_1->playerDeck[i].value;
+		for(int j = 0; j < 7; j++){
+			if(valueToMatch == player_1->playerDeck[j].value){
+				numOfMatches++;
+			}
+		}
+		if(numOfMatches == 2){
+			twoPete = 1;
+		}
+		if(numOfMatches == 3){
+			threePete = 1;
+		}
+	}
+	if(threePete == 1 && twoPete == 1){
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+//return one if a three of a kind and zero if not
+int determineThreeOfAKind(struct player* player_1){
+	int numOfMatches;
+	int valueToMatch;
+	for(int i = 0; i < 7; i++){
+		numOfMatches = 0;
+		valueToMatch = player_1->playerDeck[i].value;
+		for(int j = 0; j < 7; j++){
+			if(valueToMatch == player_1->playerDeck[j].value){
+				numOfMatches++;
+			}
+		}
+		if(numOfMatches == 3){
+			return 1;
+			break;
+		}
+	}
+	return 0;
+}
+
+//return one if a two pair and a zero if not
+int determineTwoPair(struct player* player_1){
+	int numOfMatches = 0;
+	for(int i = 0; i < 6; i++){
+		if(player_1->playerDeck[i].value == player_1->playerDeck[i+1].value){
+			numOfMatches++;
+		}
+		if(numOfMatches == 2){
+			return 1;
+			break;
+		}
+	}
+	return 0;
+}
+
+//return one if a pair and a zero if not
+int determinePair(struct player* player_1){
+	for(int i = 0; i < 6; i++){
+		if(player_1->playerDeck[i].value == player_1->playerDeck[i+1].value){
+			return 1;
+		}
+	}
+	return 0;
 }
 
 //beginning of determinePoints() function
@@ -324,6 +398,37 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 	}
 
 	//going to determine if royal flush
+	if(determineRoyalFlush(player_1) == 1){
+		printf("player has a royal flush!");
+		return 10;
+	} else if(determineStraightFlush(player_1) == 1){
+		printf("player has a straight flush!");
+		return 9;
+	} else if(determineFourOfAKind(player_1) == 1){
+		printf("Player has four of a kind!");
+		return 8;
+	} else if(determineFullHouse(player_1) == 1){
+		printf("Player has a full house!");
+		return 7;
+	} else if(determineFlush(player_1) == 1){
+		printf("Player has flush");
+		return 6;
+	} else if(determineStraight(player_1) == 1){
+		printf("Player has a straight");
+		return 5;
+	} else if(determineThreeOfAKind(player_1) == 1){
+		printf("Player has a three of a kind");
+		return 4;
+	} else if(determineTwoPair(player_1) == 1){
+		printf("Player has a two pair");
+		return 3;
+	} else if(determinePair(player_1) == 1){
+		printf("Player has a pair");
+		return 2;
+	} else {
+		printf("Player only has a high card");
+		return 1;
+	}
 	
 
 	//Testing
@@ -587,6 +692,7 @@ int main() {
 	//determining winner
 	
 	int userPoints = determinePoints(&userPlayer);
+	printf("\n%d", userPoints);
 
 
 }
