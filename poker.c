@@ -194,16 +194,116 @@ int determineRoyalFlush(struct player* player_1){
 	int jokerOfSameSuit = 0;
 	int queenOfSameSuit = 0;
 	int kingOfSameSuit = 0;
+	int aceOfSameSuit = 0;
 	char sameSuit[9];
 
 	for(int i = 6; i >= 0; i--){
-		strcpy(sameSuit, player_1->playerDeck.suit);
+		strcpy(sameSuit, player_1->playerDeck[i].suit);
 		tenOfSameSuit = 0;
 		jokerOfSameSuit = 0;
 		queenOfSameSuit = 0;
 		kingOfSameSuit = 0;
+		for(int j = 0; j < 7; j++){
+			if(player_1->playerDeck[j].value == 10){ //checking for ten of same suit
+				if(strcmp(player_1->playerDeck[j].suit, sameSuit) == 0){
+					tenOfSameSuit = 1;
+				}
+			}
+			if(player_1->playerDeck[j].value == 11){ //checking for joker of the same suit
+				if(strcmp(player_1->playerDeck[j].suit, sameSuit) == 0){
+					jokerOfSameSuit = 1;
+				}
+			}
+			if(player_1->playerDeck[j].value == 12){
+				if(strcmp(player_1->playerDeck[j].suit, sameSuit) == 0){
+					queenOfSameSuit = 1;
+				}
+			}
+			if(player_1->playerDeck[j].value == 13){
+				if(strcmp(player_1->playerDeck[j].suit, sameSuit) == 0){
+					kingOfSameSuit = 1;
+				}
+			}
+			if(player_1->playerDeck[j].value == 14){
+				if(strcmp(player_1->playerDeck[j].suit, sameSuit) == 0){
+					aceOfSameSuit = 1;
+				}
+			}
+		}
+
+		if(tenOfSameSuit == 1){
+			if(jokerOfSameSuit == 1){
+				if(queenOfSameSuit == 1){
+					if(kingOfSameSuit == 1){
+						if(aceOfSameSuit == 1){
+							return 1;
+							break;
+						}
+					}
+				}
+			}
+		}
 
 	}
+
+	return 0;
+}
+
+//returns one if straight flush and returns zero if not
+int determineStraightFlush(struct player* player_1){
+
+	int cardPoints = 0;
+	int thisCardValue = 0;
+	int nextCardValue = 0;
+	char thisCardSuit[9];
+	char nextCardSuit[9];
+	
+	for(int i = 0; i < 6; i++){
+		//To check if straight has been achieved
+		if(cardPoints >= 4){
+			return 1;
+			break;
+		}
+		thisCardValue = player_1->playerDeck[i].value;
+		nextCardValue = player_1->playerDeck[i+1].value;
+		strcpy(thisCardSuit, player_1->playerDeck[i].suit);
+		strcpy(nextCardSuit, player_1->playerDeck[i+1].suit);
+		if(thisCardValue == nextCardValue - 1){
+			if(strcmp(thisCardSuit, nextCardSuit) == 0){
+				cardPoints++;
+			}
+		} else if(thisCardValue == nextCardValue){
+			continue;
+		} else {
+			cardPoints = 0;
+		}
+	}
+
+	if(cardPoints >= 4){
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+//returns one if four of a kind and a zero if not
+int determineFourOfAKind(struct player* player_1){
+	int samesies;
+	int thisCardValue;
+	for(int i = 0; i < 7; i++){
+		thisCardValue = player_1->playerDeck[i].value;
+		samesies = 0;
+		for(int j = 0; j < 7; j++){
+			if(thisCardValue == player_1->playerDeck[j].value){
+				samesies++;
+			}
+		}
+		if(samesies >= 4){
+			return 1;
+			break;
+		}
+	}
+	return 0;
 }
 
 //beginning of determinePoints() function
@@ -227,11 +327,8 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 	
 
 	//Testing
-	if(determineStraight(player_1) == 1){
-		printf("shit straight");
-	} else {
-		printf("shit ain't straight at all");
-	}
+	printf("\n\n%d", determineStraightFlush(player_1));
+	
 
 
 }
@@ -447,6 +544,7 @@ int main() {
 	computerPlayer.playerDeck[4] = table_deck.deck[6];
 	computerPlayer.playerDeck[5] = table_deck.deck[7];
 	computerPlayer.playerDeck[6] = table_deck.deck[8];
+
 
 	//player deck and table deck have been initialized, chips have given to their players and a max bet has been put in place
 	//will now being initial bets and decisions
