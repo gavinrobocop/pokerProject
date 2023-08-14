@@ -399,44 +399,90 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 
 	//going to determine if royal flush
 	if(determineRoyalFlush(player_1) == 1){
-		printf("player has a royal flush!");
+		printf("\nplayer has a royal flush!");
 		return 10;
 	} else if(determineStraightFlush(player_1) == 1){
-		printf("player has a straight flush!");
+		printf("\nplayer has a straight flush!");
 		return 9;
 	} else if(determineFourOfAKind(player_1) == 1){
-		printf("Player has four of a kind!");
+		printf("\nPlayer has four of a kind!");
 		return 8;
 	} else if(determineFullHouse(player_1) == 1){
-		printf("Player has a full house!");
+		printf("\nPlayer has a full house!");
 		return 7;
 	} else if(determineFlush(player_1) == 1){
-		printf("Player has flush");
+		printf("\nPlayer has flush");
 		return 6;
 	} else if(determineStraight(player_1) == 1){
-		printf("Player has a straight");
+		printf("\nPlayer has a straight");
 		return 5;
 	} else if(determineThreeOfAKind(player_1) == 1){
-		printf("Player has a three of a kind");
+		printf("\nPlayer has a three of a kind");
 		return 4;
 	} else if(determineTwoPair(player_1) == 1){
-		printf("Player has a two pair");
+		printf("\nPlayer has a two pair");
 		return 3;
 	} else if(determinePair(player_1) == 1){
-		printf("Player has a pair");
+		printf("\nPlayer has a pair");
 		return 2;
 	} else {
-		printf("Player only has a high card");
+		printf("\nPlayer only has a high card");
 		return 1;
 	}
 	
 
-	//Testing
-	printf("\n\n%d", determineStraightFlush(player_1));
-	
-
 
 }
+
+void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player* player_1, struct player* player_2){
+	if(playerOne > playerTwo){
+		printf("\nWinner is player one");
+		printf("\nYou won %d chips", *potTotal);
+		player_1->chips += *potTotal;
+		*potTotal = 0;
+	} else if(playerOne < playerTwo){
+		printf("\nWinner is player two");
+		printf("\nPlayer Two stole %d chips", *potTotal);
+		player_2->chips += *potTotal;
+		*potTotal = 0;
+	} else {
+
+		if(playerOne == 1){ //if both players only have a high card
+			int playerOneHighCard = 0;
+			int playerTwoHighCard = 0;
+			for(int i = 0; i < 2; i++){
+				if(player_1->playerDeck[i].value > playerOneHighCard){
+					playerOneHighCard = player_1->playerDeck[i].value;
+				}
+				if(player_2->playerDeck[i].value > playerTwoHighCard){
+					playerTwoHighCard = player_2->playerDeck[i].value;
+				}
+			}
+			if(playerOneHighCard > playerTwoHighCard){
+				printf("\nWinner is player one with a high card of %d", playerOneHighCard);
+				printf("\nYou won %d chips", *potTotal);
+				player_1->chips += *potTotal;
+				*potTotal = 0;
+			} else if (playerOneHighCard < playerTwoHighCard){
+				printf("\nWinner is player two with a high card of %d", playerTwoHighCard);
+				printf("\nPlayer two stole %d chips", *potTotal);
+				player_2->chips+= *potTotal;
+				*potTotal = 0;
+			} else{
+				printf("\nHand is a draw, pot is split");
+				player_1->chips += *potTotal / 2;
+				player_2->chips += *potTotal / 2;
+				*potTotal = 0;
+			}
+		} else if(playerOne < 3){ //FIXME
+
+		}
+
+	}
+
+
+	}
+
 
 //Comp player functions
 
