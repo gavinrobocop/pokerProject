@@ -397,7 +397,7 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 		printf("%d ", player_1->playerDeck[i].value);
 	}
 
-	//going to determine if royal flush
+	//going to determine what hand
 	if(determineRoyalFlush(player_1) == 1){
 		printf("\nplayer has a royal flush!");
 		return 10;
@@ -434,7 +434,7 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 
 }
 
-void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player* player_1, struct player* player_2){
+void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player* player_1, struct player* player_2, struct card userDeck[], struct card compDeck[]){
 	if(playerOne > playerTwo){
 		printf("\nWinner is player one");
 		printf("\nYou won %d chips", *potTotal);
@@ -450,7 +450,7 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 		if(playerOne == 1){ //if both players only have a high card
 			int playerOneHighCard = 0;
 			int playerTwoHighCard = 0;
-			for(int i = 0; i < 2; i++){
+			for(int i = 0; i < 7; i++){
 				if(player_1->playerDeck[i].value > playerOneHighCard){
 					playerOneHighCard = player_1->playerDeck[i].value;
 				}
@@ -468,11 +468,33 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 				printf("\nPlayer two stole %d chips", *potTotal);
 				player_2->chips+= *potTotal;
 				*potTotal = 0;
-			} else{
+			} else{ //determine by kicker
+				int playerOneKicker = 0;
+				int playerTwoKicker = 0;
+				for(int i = 0; i < 2; i++){
+					if(userDeck[i].value > playerOneKicker){
+						playerOneKicker = userDeck[i].value;
+					}
+					if(compDeck[i].value > playerTwoKicker){
+						playerTwoKicker = compDeck[i].value;
+					}
+				}
+				if(playerOneKicker > playerTwoKicker){
+					printf("\nPlayer one is the winner");
+					printf("\nYou won %d chips", *potTotal);
+					player_1->chips += *potTotal;
+					*potTotal = 0;
+				} else if(playerOneKicker < playerTwoKicker){
+					printf("\nPlayer two is the winner");
+					printf("\nPlayer two has stolen %d chips", *potTotal);
+					player_2->chips += *potTotal;
+					*potTotal = 0;
+				} else{
 				printf("\nHand is a draw, pot is split");
 				player_1->chips += *potTotal / 2;
 				player_2->chips += *potTotal / 2;
 				*potTotal = 0;
+				}
 			}
 		} else if(playerOne == 2 || playerOne == 4){ //if both player have a pair or a three of a kind
 				int player1PairValue = 0;
@@ -500,11 +522,11 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 					int playerOneKicker = 0;
 					int playerTwoKicker = 0;
 					for(int i = 0; i < 2; i++){
-						if(player_1->playerDeck[i].value != player1PairValue && player_1->playerDeck[i].value > playerOneKicker){
-							playerOneKicker = player_1->playerDeck[i].value;
+						if(userDeck[i].value != player1PairValue & userDeck[i].value > playerOneKicker){
+							playerOneKicker = userDeck[i].value;
 						}
-						if(player_2->playerDeck[i].value != player2PairValue && player_2->playerDeck[i].value > playerTwoKicker){
-							playerTwoKicker = player_2->playerDeck[i].value;
+						if(compDeck[i].value != player2PairValue && compDeck[i].value > playerTwoKicker){
+							playerTwoKicker = compDeck[i].value;
 						}
 					}
 					if(playerOneKicker > playerTwoKicker){
@@ -553,11 +575,11 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 					int playerOneKicker = 0;
 					int playerTwoKicker = 0;
 					for(int i = 0; i < 2; i++){
-						if(player_1->playerDeck[i].value > playerOneKicker){
-							playerOneKicker = player_1->playerDeck[i].value;
+						if(userDeck[i].value > playerOneKicker){
+							playerOneKicker = userDeck[i].value;
 						}
-						if(player_2->playerDeck[i].value > playerTwoKicker){
-							playerTwoKicker = player_2->playerDeck[i].value;
+						if(compDeck[i].value > playerTwoKicker){
+							playerTwoKicker = compDeck[i].value;
 						}
 					}
 					if(playerOneKicker > playerTwoKicker){
@@ -577,7 +599,7 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 						*potTotal = 0;
 					}
 				}
-		} else if(playerOne == 5){//Players have a straight
+		} else if(playerOne == 5 || playerOne == 9){//Players have a straight
 				int playerOneHighCard = 0;
 				int playerTwoHighCard = 0;
 				for(int i = 0; i < 5; i++){
@@ -602,11 +624,11 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 					int playerOneKicker = 0;
 					int playerTwoKicker = 0;
 					for(int i = 0; i < 2; i++){
-						if(player_1->playerDeck[i].value > playerOneKicker){
-							playerOneKicker = player_1->playerDeck[i].value;
+						if(userDeck[i].value > playerOneKicker){
+							playerOneKicker = userDeck[i].value;
 						}
-						if(player_2->playerDeck[i].value > playerTwoKicker){
-							playerTwoKicker = player_2->playerDeck[i].value;
+						if(compDeck[i].value > playerTwoKicker){
+							playerTwoKicker = compDeck[i].value;
 						}
 					}
 					if(playerOneKicker > playerTwoKicker){
@@ -727,11 +749,11 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 				int playerOneKicker = 0;
 				int playerTwoKicker = 0;
 				for(int i = 0; i < 2; i++){
-					if(playerOneKicker < player_1->playerDeck[i].value){
-						playerOneKicker = player_1->playerDeck[i].value;
+					if(playerOneKicker < userDeck[i].value){
+						playerOneKicker = userDeck[i].value;
 					}
-					if(playerTwoKicker < player_2->playerDeck[i].value){
-						playerTwoKicker = player_2->playerDeck[i].value;
+					if(playerTwoKicker < compDeck[i].value){
+						playerTwoKicker = compDeck[i].value;
 					}
 				}
 				if(playerOneKicker > playerTwoKicker){
@@ -753,7 +775,147 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 			}
 
 		} else if(playerOne == 7){//players have a full house
+				int playerOneThreePeatValue = 0;
+				int playerTwoThreePeatValue = 0;
+				for(int i = 0; i < 5; i++){
+					if(player_1->playerDeck[i].value == player_1->playerDeck[i+1].value){
+						if(player_1->playerDeck[i+1].value == player_1->playerDeck[i+2].value){
+							playerOneThreePeatValue = player_1->playerDeck[i].value;
+						}
+					}
+					if(player_2->playerDeck[i].value == player_2->playerDeck[i+1].value){
+						if(player_2->playerDeck[i+1].value == player_2->playerDeck[i+2].value){
+							playerTwoThreePeatValue = player_2->playerDeck[i].value;
+						}
+					}
+				}
+				if(playerOneThreePeatValue > playerTwoThreePeatValue){
+					printf("\nWinner is player one");
+					printf("\nYou have won %d chips", *potTotal);
+					player_1->chips += *potTotal;
+					*potTotal = 0;
+				} else if(playerOneThreePeatValue < playerTwoThreePeatValue){
+					printf("\nWinner is player two");
+					printf("\nPlayer two stole %d chips", *potTotal);
+					player_2->chips += *potTotal;
+					*potTotal = 0;
+				} else { //determine winner from pair
+					int playerOneTwoPeatValue = 0;
+					int playerTwoTwoPeatValue = 0;
+					for(int i = 0; i < 6; i++){
+						if(player_1->playerDeck[i].value == player_1->playerDeck[i+1].value){
+							if(player_1->playerDeck[i].value != playerOneThreePeatValue){
+								playerOneTwoPeatValue = player_1->playerDeck[i].value;
+							}
+						}
+						if(player_2->playerDeck[i].value == player_2->playerDeck[i+1].value){
+							if(player_2->playerDeck[i].value != playerTwoThreePeatValue){
+								playerTwoTwoPeatValue = player_2->playerDeck[i].value;
+							}
+						}
+					}
+					if(playerOneTwoPeatValue > playerTwoTwoPeatValue){
+						printf("\nWinner is player one");
+						printf("\nYou have won %d chips", *potTotal);
+						player_1->chips += *potTotal;
+						*potTotal = 0;
+					} else if(playerOneTwoPeatValue < playerTwoTwoPeatValue){
+						printf("\nWinner is player two");
+						printf("\nPlayer two stole %d chips", *potTotal);
+						player_2->chips += *potTotal;
+						*potTotal = 0;
+					} else { //determine by kicker
+						int playerOneKicker = 0;
+						int playerTwoKicker = 0;
+						for(int i = 0; i < 2; i++){
+							if(playerOneKicker < userDeck[i].value){
+								playerOneKicker = userDeck[i].value;
+							}
+							if(playerTwoKicker < compDeck[i].value){
+								playerTwoKicker = compDeck[i].value;
+							}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nWinner is player one by kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nWinner is player two by a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nGame is a draw and the pot is split");
+							player_1->chips += *potTotal;
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						}
+					}
 
+				}
+
+		} else if(playerOne == 8){ //players have a four of a kind
+				int playerOneFourPeatValue = 0;
+				int playerTwoFourPeatValue = 0;
+				for(int i = 0; i < 4; i++){
+					if(player_1->playerDeck[i].value == player_1->playerDeck[i+1].value){
+						if(player_1->playerDeck[i+1].value == player_1->playerDeck[i+2].value){
+							if(player_1->playerDeck[i+2].value == player_1->playerDeck[i+3].value){
+								playerOneFourPeatValue = player_1->playerDeck[i].value;
+							}
+						}
+					}
+					if(player_2->playerDeck[i].value == player_2->playerDeck[i+1].value){
+						if(player_2->playerDeck[i+1].value == player_2->playerDeck[i+2].value){
+							if(player_2->playerDeck[i+2].value == player_2->playerDeck[i+3].value){
+								playerTwoFourPeatValue = player_1->playerDeck[i].value;
+							}
+						}
+					}
+				}
+				if(playerOneFourPeatValue > playerTwoFourPeatValue){
+					printf("\nWinner is player one");
+					printf("\nYou won %d chips", *potTotal);
+					player_1->chips += *potTotal;
+					*potTotal = 0;
+				} else if(playerOneFourPeatValue < playerTwoFourPeatValue){
+					printf("\nWinner is player two");
+					printf("\nPlayer two stole %d chips" , *potTotal);
+					player_2->chips += *potTotal;
+					*potTotal = 0;
+				} else { //Determine by a kicker
+					int playerOneKicker = 0;
+					int playerTwoKicker = 0;
+					for(int i = 0; i < 2; i++){
+						if(playerOneKicker < userDeck[i].value){
+							playerOneKicker = userDeck[i].value;
+						}
+						if(playerTwoKicker < compDeck[i].value){
+							playerTwoKicker = compDeck[i].value;
+						}
+					}
+					if(playerOneKicker > playerTwoKicker){
+						printf("\nWinner is player one with a kicker");
+						printf("\nYou won %d chips", *potTotal);
+						player_1->chips += *potTotal;
+						*potTotal = 0;
+					} else if(playerOneKicker < playerTwoKicker){
+						printf("\nWinner is player two with a kicker");
+						printf("\nPlayer two stole %d chips");
+						player_2->chips += *potTotal;
+						*potTotal = 0;
+					} else {
+						printf("\nHand is a draw and the pot is split");
+						player_1->chips += *potTotal;
+						player_2->chips += *potTotal;
+					}
+				}
+
+		} else {
+			printf("\nNo fucking way! Both Players have a royal flush and the pot will be split");
+			player_1->chips += *potTotal / 2;
+			player_2->chips += *potTotal / 2;
 		}
 
 
@@ -906,6 +1068,22 @@ void printPlayerUI_4(struct player* userPlayer, int* totalPot){
 }
 
 
+void printEndOfHand(struct player* player_1, struct player* player_2, int* potTotal){
+	printf("\n\nEnd of Hand\n");
+	printf("\nPot Total: %d\n\n", *potTotal);
+	printf("User Cards: [%d %s] [%d %s]  ", player_1->playerDeck[0].value, player_1->playerDeck[0].suit, player_1->playerDeck[1].value, player_1->playerDeck[1].suit);
+	printf("|  |  Computer Cards: [%d %s] [%d %s]", player_2->playerDeck[0].value, player_2->playerDeck[0].suit, player_2->playerDeck[1].value, player_2->playerDeck[1].suit);
+
+	//printing table deck
+	
+	printf("\n\nTable deck: ");
+	printf("[%d %s] ", player_1->playerDeck[2].value, player_1->playerDeck[2].suit);
+	printf("[%d %s] ", player_1->playerDeck[3].value, player_1->playerDeck[3].suit);
+	printf("[%d %s] ", player_1->playerDeck[4].value, player_1->playerDeck[4].suit);
+	printf("[%d %s] ", player_1->playerDeck[5].value, player_1->playerDeck[5].suit);
+	printf("[%d %s] ", player_1->playerDeck[6].value, player_1->playerDeck[6].suit);
+}
+
 
 int main() {
 
@@ -1016,8 +1194,14 @@ int main() {
 
 	//determining winner
 	
+	printEndOfHand(&userPlayer, &computerPlayer, &potTotal);
+	//need to take player decks to determine a kicker, will input into determine to determine kicker if necessary
+	//need to do before array is sorted in the players struct's
+	struct card userDeck[2] = {userPlayer.playerDeck[0], userPlayer.playerDeck[1]};
+	struct card compDeck[2] = {computerPlayer.playerDeck[0], computerPlayer.playerDeck[1]};
 	int userPoints = determinePoints(&userPlayer);
-	printf("\n%d", userPoints);
+	int compPoints = determinePoints(&computerPlayer);
+	determineWinner(userPoints, compPoints, &potTotal, &userPlayer, &computerPlayer, userDeck, compDeck);
 
 
 }
