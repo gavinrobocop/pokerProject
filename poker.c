@@ -490,10 +490,28 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 					player_2->chips += *potTotal;
 					*potTotal = 0;
 				} else{
-				printf("\nHand is a draw, pot is split");
-				player_1->chips += *potTotal / 2;
-				player_2->chips += *potTotal / 2;
-				*potTotal = 0;
+					for(int i = 0; i < 2; i++){
+						if(playerOneKicker != userDeck[i].value){
+							playerOneKicker = userDeck[i].value;
+						}
+						if(playerTwoKicker != userDeck[i].value){
+							playerTwoKicker = userDeck[i].value;
+						}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+						}       player_2->chips += *potTotal;
 				}
 			}
 		} else if(playerOne == 2 || playerOne == 4){ //if both player have a pair or a three of a kind
@@ -540,10 +558,28 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 						player_2->chips += *potTotal;
 						*potTotal = 0;
 					} else {
-						printf("\nHand is a draw and the pot will be split");
-						player_1->chips += *potTotal / 2;
-						player_2->chips += *potTotal /2;
-						*potTotal = 0;
+						for(int i = 0; i < 2; i++){
+							if(playerOneKicker != userDeck[i].value){
+								playerOneKicker = userDeck[i].value;
+							}
+							if(playerTwoKicker != userDeck[i].value){
+								playerTwoKicker = userDeck[i].value;
+							}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+						}       player_2->chips += *potTotal;
 					}
 				}
 		} else if(playerOne == 3){//If both players have a two pair
@@ -593,10 +629,28 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 						player_2->chips += *potTotal;
 						*potTotal = 0;
 					} else {
-						printf("\nHand is a draw");
-						player_1->chips += *potTotal / 2;
-						player_2->chips += *potTotal / 2;
-						*potTotal = 0;
+						for(int i = 0; i < 2; i++){
+							if(playerOneKicker != userDeck[i].value){
+								playerOneKicker = userDeck[i].value;
+							}
+							if(playerTwoKicker != userDeck[i].value){
+								playerTwoKicker = userDeck[i].value;
+							}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+						}       player_2->chips += *potTotal;
 					}
 				}
 		} else if(playerOne == 5 || playerOne == 9){//Players have a straight
@@ -642,10 +696,28 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 						player_2->chips += *potTotal;
 						*potTotal = 0;
 					} else {
-						printf("\nHand is a draw and the pot is split");
-						player_1->chips += *potTotal / 2;
-						player_2->chips += *potTotal / 2;
-						*potTotal = 0;
+						for(int i = 0; i < 2; i++){
+							if(playerOneKicker != userDeck[i].value){
+								playerOneKicker = userDeck[i].value;
+							}
+							if(playerTwoKicker != userDeck[i].value){
+								playerTwoKicker = userDeck[i].value;
+							}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+						}       player_2->chips += *potTotal;
 					}
 				}
 
@@ -767,10 +839,29 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 					player_2->chips += *potTotal;
 					*potTotal = 0;
 				} else {
-					printf("\nHand is a draw and pot is split");
-					player_1->chips += *potTotal / 2;
-					player_2->chips += *potTotal / 2;
-					*potTotal = 0;
+					for(int i = 0; i < 2; i++){
+						if(playerOneKicker != userDeck[i].value){
+							playerOneKicker = userDeck[i].value;
+						}
+						if(playerTwoKicker != userDeck[i].value){
+							playerTwoKicker = userDeck[i].value;
+						}
+						}
+
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+						}       player_2->chips += *potTotal;
 				}
 			}
 
@@ -846,10 +937,30 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 							player_2->chips += *potTotal;
 							*potTotal = 0;
 						} else {
-							printf("\nGame is a draw and the pot is split");
+							for(int i = 0; i < 2; i++){
+							    if(playerOneKicker != userDeck[i].value){
+								    playerOneKicker = userDeck[i].value;
+							}
+							    if(playerTwoKicker != userDeck[i].value){
+								    playerTwoKicker = userDeck[i].value;
+							}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
 							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
 							player_2->chips += *potTotal;
 							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+							player_2->chips += *potTotal;
+						}
+
 						}
 					}
 
@@ -906,9 +1017,28 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 						player_2->chips += *potTotal;
 						*potTotal = 0;
 					} else {
-						printf("\nHand is a draw and the pot is split");
-						player_1->chips += *potTotal;
-						player_2->chips += *potTotal;
+						for(int i = 0; i < 2; i++){
+							if(playerOneKicker != userDeck[i].value){
+								playerOneKicker = userDeck[i].value;
+							}
+							if(playerTwoKicker != userDeck[i].value){
+								playerTwoKicker = userDeck[i].value;
+							}
+						}
+						if(playerOneKicker > playerTwoKicker){
+							printf("\nPlayer one won this hand with a kicker");
+							printf("\nYou won %d chips", *potTotal);
+							player_1->chips += *potTotal;
+							*potTotal = 0;
+						} else if(playerOneKicker < playerTwoKicker){
+							printf("\nPlayer two won this hand with a kicker");
+							printf("\nPlayer two stole %d chips", *potTotal);
+							player_2->chips += *potTotal;
+							*potTotal = 0;
+						} else {
+							printf("\nHand is a draw and the pot is split");
+						        player_1->chips += *potTotal;
+						}       player_2->chips += *potTotal;
 					}
 				}
 
