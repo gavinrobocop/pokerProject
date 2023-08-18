@@ -37,11 +37,18 @@ void shuffleDeck(struct tableDeck* deck){
 
 }
 
+//function prototypes
+
+int userDecision_1(int*, struct player*, struct player*, int*, int*, int*, int*);
+int userDecision_2(int*, struct player*, struct player*, int*, int*); 
+int compDecision_1(struct player*, int*, int*, int*, int*);
+int compDecision_2(struct player*, int*, int*);
 //player functions
 
-void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlind, int* bigBlind, int* potTotal){
+int userDecision_1(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* maxBet, int* smallBlind, int* bigBlind, int* potTotal){
 	fflush(stdout);
 	scanf("%d", userDecision);
+	int computerDecision;
 
 	//user decision for 1st hand
 	if(*userDecision == 1) { //user chooses to call
@@ -49,7 +56,9 @@ void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlin
 		userPlayer->chips -= *bigBlind;
 		printf("\nUser puts %d chips in pot with %d remaining\n\n", *bigBlind, userPlayer->chips);
 		*potTotal += *bigBlind;
-	} else if(*userDecision == 2) { //user chooses to raise
+		computerDecision = compDecision_1(compPlayer, maxBet, smallBlind, bigBlind, potTotal);
+		return computerDecision;
+	} else if(*userDecision == 2) { //user chooses to raise FIXME
 		printf("\nUser chose to raise");
 		printf("\nPlease enter how much you would like to raise:");
 		fflush(stdout);
@@ -57,26 +66,35 @@ void userDecision_1(int* userDecision, struct player* userPlayer, int* smallBlin
 		printf("\nUser raises %d", *userDecision);
 		userPlayer->chips -= *userDecision;
 		*potTotal += *userDecision;
-	
+		return 0;
 	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
 		printf("\nUser chose to fold");
+		printf("\n\nComputer wins the pot");
+		compPlayer->chips += *potTotal;
+		*potTotal = 0;
+		return 1;
 	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
 		printf("\nUser chose to leave game");
+		return 2;
 	} else { //user chose invalid input
 		printf("\nInvalid input, good job dumbass");
+		return 0;
 	}
 
 }
 
 //user decision after the 1st hand if user going first
-void userDecision_2(int* userDecision, struct player* userPlayer, int* potTotal){ 
+int userDecision_2(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* potTotal, int* maxBet){ 
 	fflush(stdout);
 	scanf("%d", userDecision);
+	int computerDecision;
 
 	//user decision for 2nd hand
 	if(*userDecision == 1){ //user chooses to check 
 		printf("\nUser chose to check");
-	} else if(*userDecision == 2){ //user chooses to bet
+		computerDecision = compDecision_2(compPlayer, maxBet, potTotal);
+		return computerDecision;
+	} else if(*userDecision == 2){ //user chooses to bet FIXME
 		printf("\nUser chose to bet");
 		printf("\nPlease enter how much you would like to bet: ");
 		fflush(stdout);
@@ -84,12 +102,19 @@ void userDecision_2(int* userDecision, struct player* userPlayer, int* potTotal)
 		printf("\nUser bet %d", *userDecision);
 		userPlayer->chips -= *userDecision;
 		*potTotal += *userDecision;
+		return 0;
 	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
 		printf("\nUser chose to fold"); //will use the continue keyword after displaying winner of round
+		printf("\n\nComputer wins the pot");
+		compPlayer->chips += *potTotal;
+		*potTotal = 0;
+		return 1;
 	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
 		printf("\nUser chose to leave game"); //will use break keyword to breakout of loop to then show final stats of game
+		return 2;
 	} else { //user chose invalid input 
 		printf("\nInvalid input, good job dumbass"); //will give player a second chance to answer, if incorrect again will then put input as one FIXME
+	        return 0;
 	}
 	
 }
@@ -382,7 +407,7 @@ int determinePair(struct player* player_1){
 
 //beginning of determinePoints() function
 //Going to return points based on the hand the player posseses
-int determinePoints(struct player* player_1){ //Determines which hand a player has and returns the score of his hand FIXME
+int determinePoints(struct player* player_1){ //Determines which hand a player has and returns the score of his hand
 
 	//if statement to determine which hand player has, will then return score based on hand
 	//going to have to have to create a function for each of the ten hands
@@ -392,7 +417,7 @@ int determinePoints(struct player* player_1){ //Determines which hand a player h
 	
 	int size = 7;
 	bubbleSort(player_1, size);
-	printf("\nSorted array: ");
+	printf("\nSorted deck: ");
 	for(int i = 0; i < size; i++){
 		printf("%d ", player_1->playerDeck[i].value);
 	}
@@ -1057,7 +1082,7 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 
 //Comp player functions
 
-void compDecision_1(struct player* compPlayer, int* maxBet, int* potTotal){
+int compDecision_1(struct player* compPlayer, int* maxBet, int* smallBlind, int* bigBlind, int* potTotal){
 	srand(time(NULL)); //if when function gets called throughs an error might be because we seeded before
 	int compDecision = rand() % 100 + 1; //generates a random number between one and one hundred
 	
@@ -1077,7 +1102,7 @@ void compDecision_1(struct player* compPlayer, int* maxBet, int* potTotal){
 	
 }
 
-void compDecision_2(struct player* compPlayer, int* maxBet, int* potTotal){
+int compDecision_2(struct player* compPlayer, int* maxBet, int* potTotal){
 
 	int compDecision = rand() % 100 + 1;
 
@@ -1240,9 +1265,9 @@ int main() {
 		table_deck.deck[i] = (struct card){"clubs", i - 37};
 	}
 
-	printTableDeck(&table_deck);
+	//printTableDeck(&table_deck);
 
-	shuffleDeck(&table_deck);
+	//shuffleDeck(&table_deck);
 
 
 	//Cards are now initialized using compound literals, and are in the array table_deck.deck, going to handout cards and initialize players now
@@ -1256,82 +1281,123 @@ int main() {
 	int bigBlind = 20;
 	int userDecision;
 	int computerDecision;
+	int determineNextMove; //if equal to zero nothing happens, if equal to one we continue and go to next hand, and if two we break out of loop
+
 
 	userPlayer.chips = chipCount;
 	computerPlayer.chips = chipCount;
 
 	//beginning of game (card handout)
 	
-	userPlayer.playerDeck[0] = table_deck.deck[0];
-	userPlayer.playerDeck[1] = table_deck.deck[1];
-
-	computerPlayer.playerDeck[0] = table_deck.deck[2];
-	computerPlayer.playerDeck[1] = table_deck.deck[3];
-
-	//will now input input the five table deck cards in the player's player deck, although they will not be aware, we will simulate it being on the
-	//table by keeping it hidden during gameplay, only the first two cards will be shown to the player. This will make the program more efficient
+	//beginning of while loop
 	
-	userPlayer.playerDeck[2] = table_deck.deck[4];
-	userPlayer.playerDeck[3] = table_deck.deck[5];
-	userPlayer.playerDeck[4] = table_deck.deck[6];
-	userPlayer.playerDeck[5] = table_deck.deck[7];
-	userPlayer.playerDeck[6] = table_deck.deck[8];
-
-	computerPlayer.playerDeck[2] = table_deck.deck[4];
-	computerPlayer.playerDeck[3] = table_deck.deck[5];
-	computerPlayer.playerDeck[4] = table_deck.deck[6];
-	computerPlayer.playerDeck[5] = table_deck.deck[7];
-	computerPlayer.playerDeck[6] = table_deck.deck[8];
-
-
-	//player deck and table deck have been initialized, chips have given to their players and a max bet has been put in place
-	//will now being initial bets and decisions
+	while(userPlayer.chips >= 0){
+		shuffleDeck(&table_deck);
 	
-	potTotal += smallBlind + bigBlind;
-	userPlayer.chips -= smallBlind;
-	computerPlayer.chips -= bigBlind;
+	        userPlayer.playerDeck[0] = table_deck.deck[0];
+	        userPlayer.playerDeck[1] = table_deck.deck[1];
 
-	//initial bets have been placed into the pot, for the first round of poker the users can either choose to: (one) call the big blind,
-	//(two) fold and end the round, (three) raise and give a number for how much you would like to
-	
-	//beginning of ui
-	
-	printPlayerUI_1(&userPlayer, &potTotal);
-	printOptions_1();
-	userDecision_1(&userDecision, &userPlayer, &smallBlind, &bigBlind, &potTotal);
-	compDecision_1(&computerPlayer, &maxBet, &potTotal);
+	        computerPlayer.playerDeck[0] = table_deck.deck[2];
+	        computerPlayer.playerDeck[1] = table_deck.deck[3];
 
-	//beginning of 2nd round
+	        //will now input input the five table deck cards in the player's player deck, although they will not be aware, we will simulate it being on the
+	        //table by keeping it hidden during gameplay, only the first two cards will be shown to the player. This will make the program more efficient
 	
-	printPlayerUI_2(&userPlayer, &potTotal);
-	printOptions_2();
-	userDecision_2(&userDecision, &userPlayer, &potTotal);
-	compDecision_2(&computerPlayer, &maxBet, &potTotal);
+	        userPlayer.playerDeck[2] = table_deck.deck[4];
+	        userPlayer.playerDeck[3] = table_deck.deck[5];
+	        userPlayer.playerDeck[4] = table_deck.deck[6];
+	        userPlayer.playerDeck[5] = table_deck.deck[7];
+	        userPlayer.playerDeck[6] = table_deck.deck[8];
 
-	//beginning of 3rd round
-	
-	printPlayerUI_3(&userPlayer, &potTotal);
-	printOptions_2();
-	userDecision_2(&userDecision, &userPlayer, &potTotal);
-	compDecision_2(&computerPlayer, &maxBet, &potTotal);
+	        computerPlayer.playerDeck[2] = table_deck.deck[4];
+	        computerPlayer.playerDeck[3] = table_deck.deck[5];
+	        computerPlayer.playerDeck[4] = table_deck.deck[6];
+	        computerPlayer.playerDeck[5] = table_deck.deck[7];
+          	computerPlayer.playerDeck[6] = table_deck.deck[8];
 
-	//beginning of 4th and final round
-	
-	printPlayerUI_4(&userPlayer, &potTotal);
-	printOptions_2();
-	userDecision_2(&userDecision, &userPlayer, &potTotal);
-	compDecision_2(&computerPlayer, &maxBet, &potTotal);
 
-	//determining winner
+	        //player deck and table deck have been initialized, chips have given to their players and a max bet has been put in place
+ 	        //will now being initial bets and decisions
 	
-	printEndOfHand(&userPlayer, &computerPlayer, &potTotal);
-	//need to take player decks to determine a kicker, will input into determine to determine kicker if necessary
-	//need to do before array is sorted in the players struct's
-	struct card userDeck[2] = {userPlayer.playerDeck[0], userPlayer.playerDeck[1]};
-	struct card compDeck[2] = {computerPlayer.playerDeck[0], computerPlayer.playerDeck[1]};
-	int userPoints = determinePoints(&userPlayer);
-	int compPoints = determinePoints(&computerPlayer);
-	determineWinner(userPoints, compPoints, &potTotal, &userPlayer, &computerPlayer, userDeck, compDeck);
+	        potTotal += smallBlind + bigBlind;
+	        userPlayer.chips -= smallBlind;
+	        computerPlayer.chips -= bigBlind;
+
+	        //initial bets have been placed into the pot, for the first round of poker the users can either choose to: (one) call the big blind,
+	        //(two) fold and end the round, (three) raise and give a number for how much you would like to
+	
+	        //beginning of ui
+	
+          	printPlayerUI_1(&userPlayer, &potTotal);
+        	printOptions_1();
+         	determineNextMove = userDecision_1(&userDecision, &userPlayer, &computerPlayer, &maxBet, &smallBlind, &bigBlind, &potTotal);
+		if(determineNextMove == 1){
+			printf("\n\nMoving on to next hand");
+			continue;
+		}
+		if(determineNextMove == 2){
+			printf("\n\nGame Over");
+			break;
+		}
+        	//compDecision_1(&computerPlayer, &maxBet, &potTotal);
+
+	        //beginning of 2nd round
+	
+        	printPlayerUI_2(&userPlayer, &potTotal);
+        	printOptions_2();
+         	determineNextMove = userDecision_2(&userDecision, &userPlayer, &computerPlayer, &potTotal, &maxBet);
+		if(determineNextMove == 1){
+			printf("\n\nMove on to the next hand");
+			continue;
+		}
+		if(determineNextMove == 2){
+			printf("\n\nGame Over");
+			break;
+		}
+        	//compDecision_2(&computerPlayer, &maxBet, &potTotal);
+
+         	//beginning of 3rd round
+	
+         	printPlayerUI_3(&userPlayer, &potTotal);
+          	printOptions_2();
+         	determineNextMove = userDecision_2(&userDecision, &userPlayer, &computerPlayer, &potTotal, &maxBet);
+		if(determineNextMove == 1){
+			printf("\n\nMoving on to the next hand");
+			continue;
+		}
+		if(determineNextMove == 2){
+			printf("\n\nGame Over");
+			break;
+		}
+         	//compDecision_2(&computerPlayer, &maxBet, &potTotal);
+
+         	//beginning of 4th and final round
+	
+         	printPlayerUI_4(&userPlayer, &potTotal);
+         	printOptions_2();
+         	determineNextMove = userDecision_2(&userDecision, &userPlayer, &computerPlayer, &potTotal, &maxBet);
+		if(determineNextMove == 1){
+			printf("\n\nMoving on to the next hand");
+			continue;
+		}
+		if(determineNextMove == 2){
+			printf("\n\nGame Over)");
+			break;
+		}
+         	//compDecision_2(&computerPlayer, &maxBet, &potTotal);
+
+         	//determining winner
+	
+         	printEndOfHand(&userPlayer, &computerPlayer, &potTotal);
+         	//need to take player decks to determine a kicker, will input into determine to determine kicker if necessary
+         	//need to do before array is sorted in the players struct's
+         	struct card userDeck[2] = {userPlayer.playerDeck[0], userPlayer.playerDeck[1]};
+        	struct card compDeck[2] = {computerPlayer.playerDeck[0], computerPlayer.playerDeck[1]};
+         	int userPoints = determinePoints(&userPlayer);
+         	int compPoints = determinePoints(&computerPlayer);
+         	determineWinner(userPoints, compPoints, &potTotal, &userPlayer, &computerPlayer, userDeck, compDeck);
+
+	} //End of while loop
 
 
 }
