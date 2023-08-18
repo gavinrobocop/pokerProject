@@ -41,8 +41,10 @@ void shuffleDeck(struct tableDeck* deck){
 
 int userDecision_1(int*, struct player*, struct player*, int*, int*, int*, int*);
 int userDecision_2(int*, struct player*, struct player*, int*, int*); 
-int compDecision_1(struct player*, int*, int*, int*, int*);
-int compDecision_2(struct player*, int*, int*);
+int compDecision_1(int*, struct player*, struct player*, int*, int*, int*, int*);
+int compDecision_2(int*, struct player*, struct player*, int*, int*);
+int compDecision_1_1(int*, struct player*, struct player*, int*, int*);
+void printOptions_1(void);
 //player functions
 
 int userDecision_1(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* maxBet, int* smallBlind, int* bigBlind, int* potTotal){
@@ -56,7 +58,7 @@ int userDecision_1(int* userDecision, struct player* userPlayer, struct player* 
 		userPlayer->chips -= *bigBlind;
 		printf("\nUser puts %d chips in pot with %d remaining\n\n", *bigBlind, userPlayer->chips);
 		*potTotal += *bigBlind;
-		computerDecision = compDecision_1(compPlayer, maxBet, smallBlind, bigBlind, potTotal);
+		computerDecision = compDecision_1(userDecision, userPlayer, compPlayer, maxBet, smallBlind, bigBlind, potTotal);
 		return computerDecision;
 	} else if(*userDecision == 2) { //user chooses to raise FIXME
 		printf("\nUser chose to raise");
@@ -66,18 +68,20 @@ int userDecision_1(int* userDecision, struct player* userPlayer, struct player* 
 		printf("\nUser raises %d", *userDecision);
 		userPlayer->chips -= *userDecision;
 		*potTotal += *userDecision;
-		return 0;
-	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
+		return compDecision_1_1(userDecision, userPlayer, compPlayer, maxBet, potTotal);
+	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round)
 		printf("\nUser chose to fold");
 		printf("\n\nComputer wins the pot");
 		compPlayer->chips += *potTotal;
 		*potTotal = 0;
 		return 1;
-	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
+	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed)
 		printf("\nUser chose to leave game");
 		return 2;
 	} else { //user chose invalid input
-		printf("\nInvalid input, good job dumbass");
+		printf("\nUser chose to call");
+		userPlayer->chips -= *bigBlind;
+		printf("\nUser puts %d chips in pot with %d remaining\n\n", *bigBlind, userPlayer->chips);
 		return 0;
 	}
 
@@ -92,7 +96,7 @@ int userDecision_2(int* userDecision, struct player* userPlayer, struct player* 
 	//user decision for 2nd hand
 	if(*userDecision == 1){ //user chooses to check 
 		printf("\nUser chose to check");
-		computerDecision = compDecision_2(compPlayer, maxBet, potTotal);
+		computerDecision = compDecision_2(userDecision, userPlayer, compPlayer, maxBet, potTotal);
 		return computerDecision;
 	} else if(*userDecision == 2){ //user chooses to bet FIXME
 		printf("\nUser chose to bet");
@@ -102,21 +106,59 @@ int userDecision_2(int* userDecision, struct player* userPlayer, struct player* 
 		printf("\nUser bet %d", *userDecision);
 		userPlayer->chips -= *userDecision;
 		*potTotal += *userDecision;
-		return 0;
-	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round) FIXME
+		return compDecision_1_1(userDecision, userPlayer, compPlayer, potTotal, maxBet);
+	} else if(*userDecision == 3){ //user chooses to fold (announce winner of hand and move on to next round)
 		printf("\nUser chose to fold"); //will use the continue keyword after displaying winner of round
 		printf("\n\nComputer wins the pot");
 		compPlayer->chips += *potTotal;
 		*potTotal = 0;
 		return 1;
-	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed) FIXME
+	} else if(*userDecision == 4){ //user chooses to leave (game is over and end game result is displayed)
 		printf("\nUser chose to leave game"); //will use break keyword to breakout of loop to then show final stats of game
 		return 2;
 	} else { //user chose invalid input 
-		printf("\nInvalid input, good job dumbass"); //will give player a second chance to answer, if incorrect again will then put input as one FIXME
-	        return 0;
+		printf("\nUser chose to check");
+		computerDecision = compDecision_2(userDecision, userPlayer, compPlayer, maxBet, potTotal);
+	        return computerDecision;
 	}
 	
+}
+
+int userDecision_1_1(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* potTotal, int* compDecision, int* maxBet){ //if computer chooses to raise
+	printf("\n");
+	printOptions_1();
+	fflush(stdout);
+	scanf("%d", userDecision);
+	if(*userDecision == 1){
+		printf("\nUser chose to call Computer's bet");
+		userPlayer->chips -= *compDecision;
+		*potTotal += *compDecision;
+		return 0;
+	} else if(*userDecision == 2){
+		printf("\nUser chose to raise");
+		printf("\nPlease enter how much you would like to raise computer's call: ");
+		fflush(stdout);
+		scanf("%d", userDecision);
+		*userDecision += *compDecision;
+		printf("\nUser bet %d", *userDecision);
+		userPlayer->chips -= *userDecision;
+		*potTotal += *userDecision;
+		return compDecision_1_1(userDecision, userPlayer, compPlayer, potTotal, maxBet);
+	} else if(*userDecision == 3){
+		printf("\nUser chose to fold");
+		printf("\n\nComputer wins the pot");
+		compPlayer->chips += *potTotal;
+		*potTotal = 0;
+		return 1;
+	} else if(*userDecision == 4){
+		printf("\nUser chose to leave game");
+		return 2;
+	} else {
+		printf("\nUser chose to call Computer's bet");
+		userPlayer->chips -= *compDecision;
+		*potTotal += *compDecision;
+		return 0;
+	}
 }
 
 //Helper Functions for determinePoints() function
@@ -1082,42 +1124,75 @@ void determineWinner(int playerOne, int playerTwo, int* potTotal, struct player*
 
 //Comp player functions
 
-int compDecision_1(struct player* compPlayer, int* maxBet, int* smallBlind, int* bigBlind, int* potTotal){
+int compDecision_1(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* maxBet, int* smallBlind, int* bigBlind, int* potTotal){ //if player calls first
 	srand(time(NULL)); //if when function gets called throughs an error might be because we seeded before
 	int compDecision = rand() % 100 + 1; //generates a random number between one and one hundred
 	
 	//will now initiate comp decision
 	if(compDecision <= 75){ //comp chose to call
 		printf("\nComputer chose to call");
+		return 0;
 	} else if(compDecision < 95){ //comp chose to raise
 		printf("\nComputer chose to raise");
 		compDecision = rand() % *maxBet + 1;
 		compPlayer->chips -= compDecision;
 		printf("\n\nComputer chose to raise %d", compDecision);
 		*potTotal += compDecision;
-		//Player should now have the option to call or fold FIXME
+		return userDecision_1_1(userDecision, userPlayer, compPlayer, potTotal, &compDecision, maxBet);
 	} else {
-		printf("\nComputer chose to fold"); //Computer chooses to fold (will use continue keyword after displaying winner of the round)FIXME
+		printf("\nComputer chose to fold"); //Computer chooses to fold (will use continue keyword after displaying winner of the round)
+		printf("\nPot goes to user");
+		userPlayer->chips += *potTotal;
+		*potTotal = 0;
+		return 1;
 	}
 	
 }
 
-int compDecision_2(struct player* compPlayer, int* maxBet, int* potTotal){
+int compDecision_2(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* maxBet, int* potTotal){ //if player checks first
 
 	int compDecision = rand() % 100 + 1;
 
 	if(compDecision <= 66){ //computer chooses to check 
 		printf("\nComputer chose to check");
+		return 0;
 	} else if(compDecision <= 90){ //computer chooses to bet
 		printf("\nComputer chose to bet");
 		compDecision = rand() % *maxBet;
 		printf("\nComputer bet %d", compDecision);
 		compPlayer->chips -= compDecision;
 		*potTotal += compDecision;
-	} else { //computer chooses to fold (announce winner of hand and move on to next round) FIXME
+		return userDecision_1_1(userDecision, userPlayer, compPlayer, potTotal, &compDecision, maxBet);
+	} else { //computer chooses to fold (announce winner of hand and move on to next round)
 		printf("\nComputer chose to fold"); //will use the continue keyword after displaying winner of round
+	        printf("\nPot goes to user");
+		userPlayer->chips += *potTotal;
+		*potTotal = 0;
+		return 1;
 	}
 
+}
+
+int compDecision_1_1(int* userDecision, struct player* userPlayer, struct player* compPlayer, int* maxBet, int* potTotal){ //if player going first and decides to bet
+	int compDecision = rand() % 100 + 1;
+	if(compDecision < 70){ //computers calls players raise
+		printf("\nComputer chose to call players bet");
+		*potTotal += *userDecision;
+		compPlayer->chips -= *userDecision;
+		return 0;
+	} else if(compDecision < 95){ //User must then decide to call computer bet or fold FIXME
+		compDecision = rand() % *maxBet + *userDecision;
+		printf("\nComputer chose to raise %d chips", compDecision);
+		compPlayer->chips -= compDecision;
+		*potTotal += compDecision;
+		return userDecision_1_1(userDecision, userPlayer, compPlayer, potTotal, &compDecision, maxBet);
+	} else {
+		printf("\nComputer chose to fold");
+		printf("\nUser wins pot");
+		userPlayer->chips += *potTotal;
+		*potTotal = 0;
+		return 1;
+	}
 }
 
 
@@ -1239,6 +1314,14 @@ void printEndOfHand(struct player* player_1, struct player* player_2, int* potTo
 	printf("[%d %s] ", player_1->playerDeck[6].value, player_1->playerDeck[6].suit);
 }
 
+void printToNextHand(){
+	printf("\n\n\n--Next Hand Shuffle in Progress--\n\n");
+}
+
+void printToNextRound(){
+	printf("\n\n--On to next round--\n\n");
+}
+
 
 int main() {
 
@@ -1333,6 +1416,7 @@ int main() {
          	determineNextMove = userDecision_1(&userDecision, &userPlayer, &computerPlayer, &maxBet, &smallBlind, &bigBlind, &potTotal);
 		if(determineNextMove == 1){
 			printf("\n\nMoving on to next hand");
+			printToNextHand();
 			continue;
 		}
 		if(determineNextMove == 2){
@@ -1342,12 +1426,14 @@ int main() {
         	//compDecision_1(&computerPlayer, &maxBet, &potTotal);
 
 	        //beginning of 2nd round
-	
+
+		printToNextRound();
         	printPlayerUI_2(&userPlayer, &potTotal);
         	printOptions_2();
          	determineNextMove = userDecision_2(&userDecision, &userPlayer, &computerPlayer, &potTotal, &maxBet);
 		if(determineNextMove == 1){
 			printf("\n\nMove on to the next hand");
+			printToNextHand();
 			continue;
 		}
 		if(determineNextMove == 2){
@@ -1357,12 +1443,14 @@ int main() {
         	//compDecision_2(&computerPlayer, &maxBet, &potTotal);
 
          	//beginning of 3rd round
-	
+
+		printToNextRound();
          	printPlayerUI_3(&userPlayer, &potTotal);
           	printOptions_2();
          	determineNextMove = userDecision_2(&userDecision, &userPlayer, &computerPlayer, &potTotal, &maxBet);
 		if(determineNextMove == 1){
 			printf("\n\nMoving on to the next hand");
+			printToNextHand();
 			continue;
 		}
 		if(determineNextMove == 2){
@@ -1372,12 +1460,14 @@ int main() {
          	//compDecision_2(&computerPlayer, &maxBet, &potTotal);
 
          	//beginning of 4th and final round
-	
+
+		printToNextRound();
          	printPlayerUI_4(&userPlayer, &potTotal);
          	printOptions_2();
          	determineNextMove = userDecision_2(&userDecision, &userPlayer, &computerPlayer, &potTotal, &maxBet);
 		if(determineNextMove == 1){
 			printf("\n\nMoving on to the next hand");
+			printToNextHand();
 			continue;
 		}
 		if(determineNextMove == 2){
@@ -1389,13 +1479,17 @@ int main() {
          	//determining winner
 	
          	printEndOfHand(&userPlayer, &computerPlayer, &potTotal);
+		printf("\n");
          	//need to take player decks to determine a kicker, will input into determine to determine kicker if necessary
          	//need to do before array is sorted in the players struct's
          	struct card userDeck[2] = {userPlayer.playerDeck[0], userPlayer.playerDeck[1]};
         	struct card compDeck[2] = {computerPlayer.playerDeck[0], computerPlayer.playerDeck[1]};
          	int userPoints = determinePoints(&userPlayer);
+		printf("\n");
          	int compPoints = determinePoints(&computerPlayer);
+		printf("\n");
          	determineWinner(userPoints, compPoints, &potTotal, &userPlayer, &computerPlayer, userDeck, compDeck);
+		printToNextHand();
 
 	} //End of while loop
 
